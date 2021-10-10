@@ -1,22 +1,36 @@
 const { Schema, model } = require("mongoose"); //
 
-const User = new Schema({
+const validateEmail = function (email) {
+  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email);
+};
+
+const UserSchema = new Schema({
   username: {
-    type: String,
-    // String
-    // Unique
-    // Required
-    // Trimmed
+    type: String, // String
+    required: true, // Required
+    unique: true, // Unique
+    trimmed: true, // Trimmed
   },
   email: {
-    // String
-    // Required
-    // Unique
-    // Must match a valid email address (look into Mongoose's matching validation)
+    type: String, // String
+    required: true, // Required
+    unique: true, // Unique
+    validate: [validateEmail, "Please fill a valid email address"],
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      "Please fill a valid email address",
+    ],
   },
   thoughts: {},
   friends: {},
 });
+
+User.virtual("friendCount").get(function () {
+  return this.friends.length;
+});
+
+const User = model("User", UserSchema);
 
 module.exports = Users;
 
