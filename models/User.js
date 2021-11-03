@@ -22,18 +22,34 @@ const UserSchema = new Schema({
       "Please fill a valid email address",
     ],
   },
-  thoughts: {},
-  friends: {},
+  password: {
+    type: String,
+    required: true,
+    minlength: 5,
+  },
+  thoughts: [{ type: Schema.Types.ObjectId, ref: "Thought" }],
+  friends: [{ type: Schema.Types.ObjectId, ref: "User" }],
 });
 
-UserSchema.virtual("friendCount").get(function () {
+UserSchema.virtual("friendCount").get(
+  function () {
+    return this.friends.length;
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
+
+// Schema Settings
+
+// Create a virtual called friendCount that retrieves the length of the user's friends array field on query.
+
+userSchema.virtual("friendCount").get(function () {
   return this.friends.length;
 });
 
 const User = model("User", UserSchema);
 
 module.exports = User;
-
-// Schema Settings
-
-// Create a virtual called friendCount that retrieves the length of the user's friends array field on query.

@@ -53,6 +53,17 @@ const userController = {
       .then((dbData) => res.json(dbData))
       .catch((err) => res.json(err));
   },
+  addFriend(parent, { friendId }, context) {
+    if (context.user) {
+      const updatedUser = User.findOneAndUpdate(
+        { _id: context.user._id },
+        { $addToSet: { friends: friendId } },
+        { new: true }
+      ).populate("friends");
+
+      return updatedUser;
+    }
+  },
 };
 
 module.exports = userController;
